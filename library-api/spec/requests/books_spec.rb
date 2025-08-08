@@ -181,7 +181,7 @@ RSpec.describe 'Books', type: :request do
     let!(:scifi_book) { create(:book, title: 'SciFi Book', author: 'Author B', genre: 'Science Fiction') }
 
     it 'returns books matching the query' do
-      get '/books/search', params: { query: 'Fiction' }, headers: { 'Authorization' => "Bearer #{valid_token}" }
+      get '/books/search', params: { query: 'Fiction Book' }, headers: { 'Authorization' => "Bearer #{valid_token}" }
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
