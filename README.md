@@ -13,7 +13,7 @@ A comprehensive Ruby on Rails API for managing a library system with authenticat
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/davijonm/library-system.git
 cd library-system
 
 # Start the entire system
@@ -98,25 +98,6 @@ GET    /borrowings/dashboard          # User dashboard
 GET    /borrowings/overdue_members    # Overdue members (Librarian only)
 ```
 
-### Run tests
-
-```bash
-docker compose exec rails bundle exec rspec
-```
-
-### Database operations
-
-```bash
-# Reset database
-docker compose exec rails rails db:reset
-
-# Run migrations
-docker compose exec rails rails db:migrate
-
-# Seed data
-docker compose exec rails rails db:seed
-```
-
 ## User Roles
 
 ### Librarian
@@ -136,6 +117,7 @@ docker compose exec rails rails db:seed
 ## Testing
 
 The application includes comprhensive RSpec tests:
+
 ```bash
 # Prepare the test database 
 docker compose exec rails bash -c "RAILS_ENV=test rails db:reset"
@@ -190,18 +172,6 @@ The API uses JWT (JSON Web Tokens) for authentication:
 - `due_date`: When book is due
 - `returned_at`: When book was returned (nullable)
 - `created_at`, `updated_at`: Timestamps
-
-## Environment Variables
-
-Key environment variables for the Rails container:
-
-```bash
-RAILS_ENV=development
-DATABASE_HOST=postgres
-DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=password
-RAILS_MASTER_KEY=your_master_key_here
-```
 
 ### Reset Everything
 
