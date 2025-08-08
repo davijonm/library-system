@@ -116,7 +116,7 @@ GET    /borrowings/overdue_members    # Overdue members (Librarian only)
 
 ## Testing
 
-The application includes comprhensive RSpec tests:
+The application includes comprhensive RSpec tests and are covered with simple-cov (96%)
 
 ```bash
 # Prepare the test database 
