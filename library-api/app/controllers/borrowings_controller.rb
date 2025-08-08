@@ -14,12 +14,12 @@ class BorrowingsController < ApplicationController
   def create
     @book = Book.find(params[:book_id])
     @borrowing = current_user.borrowings.build(book: @book)
-    
+
     if @borrowing.save
       @book.borrow!
       render json: @borrowing, status: :created
     else
-      render json: { errors: @borrowing.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @borrowing.errors.full_messages }, status: :unprocessable_content
     end
   end
 
@@ -27,7 +27,7 @@ class BorrowingsController < ApplicationController
     if @borrowing.return!
       render json: { message: 'Book returned successfully' }
     else
-      render json: { error: 'Book already returned' }, status: :unprocessable_entity
+      render json: { error: 'Book already returned' }, status: :unprocessable_content
     end
   end
 
