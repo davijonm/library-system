@@ -5,7 +5,7 @@ class Book < ApplicationRecord
   validates :title, presence: true
   validates :author, presence: true
   validates :genre, presence: true
-  validates :isbn, presence: true, uniqueness: true
+  validates :isbn, presence: true, uniqueness: { case_sensitive: false }
   validates :total_copies, presence: true, numericality: { greater_than: 0 }
   validates :available_copies, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
