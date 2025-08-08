@@ -40,7 +40,7 @@ RSpec.describe 'Auth', type: :request do
           }
         }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json['errors']).to include('Email is invalid')
       end
@@ -54,7 +54,7 @@ RSpec.describe 'Auth', type: :request do
           }
         }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json['errors']).to include('Password is too short (minimum is 6 characters)')
       end
@@ -68,7 +68,7 @@ RSpec.describe 'Auth', type: :request do
           }
         }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json['errors']).to include('Role is not included in the list')
       end
@@ -80,7 +80,7 @@ RSpec.describe 'Auth', type: :request do
       it 'returns validation error' do
         post '/register', params: valid_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json['errors']).to include('Email has already been taken')
       end
