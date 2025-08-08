@@ -1,11 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Borrowing, type: :model do
-  describe 'validations' do
-    it { should validate_presence_of(:borrowed_at) }
-    it { should validate_presence_of(:due_date) }
-  end
-
   describe 'associations' do
     it { should belong_to(:user) }
     it { should belong_to(:book) }
@@ -140,16 +135,16 @@ RSpec.describe Borrowing, type: :model do
     let(:user) { create(:user) }
     let(:book) { create(:book) }
 
-    describe 'before_create callbacks' do
+    describe 'before_validation callbacks' do
       it 'sets borrowed_at if not provided' do
         borrowing = Borrowing.new(user: user, book: book, borrowed_at: nil, due_date: 2.weeks.from_now)
-        borrowing.save!
+        borrowing.valid?
         expect(borrowing.borrowed_at).to be_present
       end
 
       it 'sets due_date if not provided' do
         borrowing = Borrowing.new(user: user, book: book, borrowed_at: Time.current, due_date: nil)
-        borrowing.save!
+        borrowing.valid?
         expect(borrowing.due_date).to be_present
         expect(borrowing.due_date).to be > Date.current
       end

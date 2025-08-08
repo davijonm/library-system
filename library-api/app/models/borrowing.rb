@@ -12,8 +12,8 @@ class Borrowing < ApplicationRecord
   scope :overdue, -> { where('due_date < ? AND returned_at IS NULL', Date.current) }
   scope :due_today, -> { where('due_date = ? AND returned_at IS NULL', Date.current) }
 
-  before_create :set_borrowed_at
-  before_create :set_due_date
+  before_validation :set_borrowed_at
+  before_validation :set_due_date
 
   def overdue?
     due_date < Date.current && returned_at.nil?
