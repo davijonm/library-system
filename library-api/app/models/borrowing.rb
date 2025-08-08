@@ -66,6 +66,6 @@ class Borrowing < ApplicationRecord
   end
 
   def skip_due_date_validation?
-    Rails.env.development? && caller.any? { |line| line.include?('seeds.rb') }
+    !Rails.env.production? && caller.any? { |line| line.include?('seeds.rb') }
   end
 end

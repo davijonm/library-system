@@ -136,10 +136,14 @@ docker compose exec rails rails db:seed
 ## Testing
 
 The application includes comprhensive RSpec tests:
+```bash
+# Prepare the test database 
+docker compose exec rails bash -c "RAILS_ENV=test rails db:reset"
+```
 
 ```bash
 # Run all tests
-docker compose exec rails bundle exec rspec
+docker compose exec rails bash -c "RAILS_ENV=test bundle exec rspec ./spec"
 ```
 
 ## Authentication
