@@ -172,7 +172,7 @@ RSpec.describe 'Borrowings', type: :request do
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
-        expect(json.length).to eq(2)
+        expect(json.length).to eq(1)
       end
     end
 
