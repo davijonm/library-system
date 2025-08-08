@@ -1,287 +1,203 @@
-# Library Management System API
+# Library Management System
 
-A Ruby on Rails API for managing a library system with user authentication, book management, and borrowing functionality.
+A comprehensive Ruby on Rails API for managing a library system with authentication, book management, and borrowing functionality.
 
 ## Features
 
-### Authentication & Authorization
+### Prerequisites
 
-- User registration and login with JWT tokens
-- Two user roles: Librarian and Member
-- Role-based access control for different operations
+- Docker and Docker Compose installed
+- Git
 
-### Book Management
-
-- CRUD operations for books (Librarians only)
-- Book search by title, author, or genre
-- Track total copies and available copies
-- ISBN validation and uniqueness
-
-### Borrowing System
-
-- Members can borrow available books
-- Automatic due date calculation (2 weeks from borrowing)
-- Prevent duplicate borrowings of the same book
-- Librarians can mark books as returned
-- Track overdue books and due dates
-
-### Dashboard
-
-- **Librarian Dashboard**: Total books, borrowed books, books due today, overdue books
-- **Member Dashboard**: User's borrowed books, due dates, overdue books
-
-## Technology Stack
-
-- **Ruby**: 3.4.2
-- **Rails**: 8.0.2 (API mode)
-- **Database**: PostgreSQL
-- **Authentication**: JWT (JSON Web Tokens)
-- **Testing**: RSpec, FactoryBot, Shoulda Matchers
-- **Containerization**: Docker Compose
-
-## Prerequisites
-
-- Ruby 3.4.2
-- Docker and Docker Compose
-- PostgreSQL (via Docker)
-
-## Setup Instructions
-
-### 1. Clone and Navigate
+### One-Command Setup
 
 ```bash
-cd library-api
+# Clone the repository
+git clone <repository-url>
+cd library-system
+
+# Start the entire system
+./start.sh
 ```
 
-### 2. Start PostgreSQL with Docker
+The system will be available at:
+
+- **Rails API**: http://localhost:3000
+- **PostgreSQL**: localhost:5432
+
+## 🏗️ Architecture
+
+```
+library-system/
+├── library-api/          # Rails application
+├── docker-compose.yml    # Multi-container setup
+├── Dockerfile           # Rails container definition
+├── start.sh             # Quick start script
+└── README.md           # This file
+```
+
+## 🐳 Docker Services
+
+### Rails Application (`library_rails`)
+
+- **Port**: 3000
+- **Environment**: Development
+- **Features**:
+  - Hot reloading for development
+  - Automatic database setup
+  - Bundle caching
+
+### PostgreSQL Database (`library_postgres`)
+
+- **Port**: 5432
+- **Database**: library_api_development
+- **Features**:
+  - Health checks
+  - Persistent data storage
+  - Optimized for development
+
+## 📋 API Endpoints
+
+### Authentication
+
+```
+POST /register     # Register a new user
+POST /login        # Login user
+POST /logout       # Logout user
+```
+
+### Books
+
+```
+GET    /books              # List all books
+GET    /books/:id          # Get specific book
+POST   /books              # Create book (Librarian only)
+PUT    /books/:id          # Update book (Librarian only)
+DELETE /books/:id          # Delete book (Librarian only)
+GET    /books/search       # Search books
+```
+
+### Borrowings
+
+```
+GET    /borrowings                    # List user borrowings
+GET    /borrowings/:id                # Get specific borrowing
+POST   /borrowings                    # Borrow a book
+PATCH  /borrowings/:id/return_book    # Return a book (Librarian only)
+GET    /borrowings/dashboard          # User dashboard
+GET    /borrowings/overdue_members    # Overdue members (Librarian only)
+```
+
+## 🔧 Development Commands
+
+### Start the system
 
 ```bash
 docker compose up -d
 ```
 
-### 3. Install Dependencies
+### View logs
 
 ```bash
-bundle install
+# All services
+docker compose logs -f
+
+# Specific service
+docker compose logs -f rails
+docker compose logs -f postgres
 ```
 
-### 4. Setup Database
+### Stop the system
 
 ```bash
-rails db:create db:migrate db:seed
+docker compose down
 ```
 
-### 5. Start the Server
+### Rebuild containers
 
 ```bash
-rails server
+docker compose up --build -d
 ```
 
-The API will be available at `http://localhost:3000`
+### Access Rails console
 
-## API Endpoints
-
-### Authentication
-
-#### Register User
-
-```
-POST /register
-Content-Type: application/json
-
-{
-  "user": {
-    "email": "user@example.com",
-    "password": "password123",
-    "role": "member"
-  }
-}
+```bash
+docker compose exec rails rails console
 ```
 
-#### Login
+### Run tests
 
-```
-POST /login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
+```bash
+docker compose exec rails bundle exec rspec
 ```
 
-#### Logout
+### Database operations
 
-```
-POST /logout
-Authorization: Bearer <token>
-```
+```bash
+# Reset database
+docker compose exec rails rails db:reset
 
-### Books
+# Run migrations
+docker compose exec rails rails db:migrate
 
-#### List Books
-
-```
-GET /books
-Authorization: Bearer <token>
+# Seed data
+docker compose exec rails rails db:seed
 ```
 
-#### Search Books
+## 👥 User Roles
 
-```
-GET /books?search=query
-Authorization: Bearer <token>
-```
+### Librarian
 
-#### Get Book
+- Can create, update, and delete books
+- Can mark books as returned
+- Can view overdue members
+- Full dashboard access
 
-```
-GET /books/:id
-Authorization: Bearer <token>
-```
+### Member
 
-#### Create Book (Librarian only)
+- Can view available books
+- Can borrow books
+- Can view their borrowing history
+- Limited dashboard access
 
-```
-POST /books
-Authorization: Bearer <token>
-Content-Type: application/json
+## 🧪 Testing
 
-{
-  "book": {
-    "title": "Book Title",
-    "author": "Author Name",
-    "genre": "Fiction",
-    "isbn": "978-1234567890",
-    "total_copies": 5,
-    "available_copies": 5
-  }
-}
-```
+The application includes comprehensive RSpec tests:
 
-#### Update Book (Librarian only)
+```bash
+# Run all tests
+docker-compose exec rails bundle exec rspec
 
-```
-PUT /books/:id
-Authorization: Bearer <token>
-Content-Type: application/json
+# Run specific test files
+docker-compose exec rails bundle exec rspec spec/models/
+docker-compose exec rails bundle exec rspec spec/requests/
 
-{
-  "book": {
-    "title": "Updated Title"
-  }
-}
+# Run with coverage
+docker-compose exec rails bundle exec rspec --format documentation
 ```
 
-#### Delete Book (Librarian only)
+## 🔐 Authentication
 
-```
-DELETE /books/:id
-Authorization: Bearer <token>
-```
+The API uses JWT (JSON Web Tokens) for authentication:
 
-### Borrowings
+1. **Register**: `POST /register` with email, password, and role
+2. **Login**: `POST /login` with email and password
+3. **Use Token**: Include `Authorization: Bearer <token>` in subsequent requests
 
-#### List User Borrowings
-
-```
-GET /borrowings
-Authorization: Bearer <token>
-```
-
-#### Get Borrowing
-
-```
-GET /borrowings/:id
-Authorization: Bearer <token>
-```
-
-#### Borrow Book
-
-```
-POST /borrowings
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "book_id": 1
-}
-```
-
-#### Return Book (Librarian only)
-
-```
-PATCH /borrowings/:id/return_book
-Authorization: Bearer <token>
-```
-
-#### Dashboard
-
-```
-GET /borrowings/dashboard
-Authorization: Bearer <token>
-```
-
-#### Overdue Members (Librarian only)
-
-```
-GET /borrowings/overdue_members
-Authorization: Bearer <token>
-```
-
-## Sample Data
-
-The application comes with seeded data for testing:
-
-### Users
+### Sample Users (from seeds)
 
 - **Librarian**: `librarian@library.com` / `password123`
 - **Member 1**: `member1@library.com` / `password123`
 - **Member 2**: `member2@library.com` / `password123`
 
-### Books
-
-- The Great Gatsby
-- To Kill a Mockingbird
-- 1984
-- Pride and Prejudice
-- The Hobbit
-- The Catcher in the Rye
-- Lord of the Flies
-- Animal Farm
-
-## Testing
-
-### Run All Tests
-
-```bash
-bundle exec rspec
-```
-
-### Run Specific Test Files
-
-```bash
-bundle exec rspec spec/models/
-bundle exec rspec spec/requests/
-```
-
-### Test Coverage
-
-The test suite includes:
-
-- Model validations and associations
-- Controller actions and authorization
-- API endpoint functionality
-- Business logic for borrowing and returning
-
-## Database Schema
+## 📊 Database Schema
 
 ### Users
 
 - `id`: Primary key
 - `email`: Unique email address
-- `password_digest`: Encrypted password
-- `role`: User role (librarian/member)
+- `password_digest`: Hashed password
+- `role`: 'librarian' or 'member'
 - `created_at`, `updated_at`: Timestamps
 
 ### Books
@@ -292,7 +208,7 @@ The test suite includes:
 - `genre`: Book genre
 - `isbn`: Unique ISBN
 - `total_copies`: Total number of copies
-- `available_copies`: Number of available copies
+- `available_copies`: Available copies
 - `created_at`, `updated_at`: Timestamps
 
 ### Borrowings
@@ -300,35 +216,83 @@ The test suite includes:
 - `id`: Primary key
 - `user_id`: Foreign key to users
 - `book_id`: Foreign key to books
-- `borrowed_at`: When the book was borrowed
-- `due_date`: When the book is due
-- `returned_at`: When the book was returned (nullable)
+- `borrowed_at`: When book was borrowed
+- `due_date`: When book is due
+- `returned_at`: When book was returned (nullable)
 - `created_at`, `updated_at`: Timestamps
 
-## Environment Variables
+## 🛠️ Environment Variables
 
-The application uses the following environment variables for database configuration:
-
-- `DATABASE_HOST`: Database host (default: localhost)
-- `DATABASE_USERNAME`: Database username (default: postgres)
-- `DATABASE_PASSWORD`: Database password (default: password)
-
-## Development
-
-### Adding New Features
-
-1. Create models with `rails generate model`
-2. Add validations and associations
-3. Create controllers with `rails generate controller`
-4. Add routes to `config/routes.rb`
-5. Write tests for models and controllers
-6. Update documentation
-
-### Code Style
-
-The project uses RuboCop for code style enforcement:
+Key environment variables for the Rails container:
 
 ```bash
-bundle exec rubocop
+RAILS_ENV=development
+DATABASE_HOST=postgres
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=password
+RAILS_MASTER_KEY=your_master_key_here
 ```
 
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Port already in use**
+
+   ```bash
+   # Check what's using the port
+   lsof -i :3000
+   # Stop the conflicting service
+   ```
+
+2. **Database connection issues**
+
+   ```bash
+   # Restart the database
+   docker-compose restart postgres
+   ```
+
+3. **Rails server not starting**
+
+   ```bash
+   # Check logs
+   docker-compose logs rails
+   # Rebuild the container
+   docker-compose up --build rails
+   ```
+
+4. **Permission issues**
+   ```bash
+   # Fix file permissions
+   sudo chown -R $USER:$USER .
+   ```
+
+### Reset Everything
+
+```bash
+# Stop and remove everything
+docker compose down -v
+
+# Remove all images
+docker system prune -a
+
+# Start fresh
+./start.sh
+```
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+---
+
+**Happy coding! 📚✨**
