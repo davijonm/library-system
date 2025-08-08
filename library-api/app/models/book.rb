@@ -9,7 +9,7 @@ class Book < ApplicationRecord
   validates :total_copies, presence: true, numericality: { greater_than: 0 }
   validates :available_copies, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  before_save :ensure_available_copies_not_exceed_total
+  before_validation :ensure_available_copies_not_exceed_total
 
   scope :available, -> { where('available_copies > 0') }
   scope :search_by_title, ->(title) { where('title ILIKE ?', "%#{title}%") }
