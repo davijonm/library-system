@@ -106,7 +106,7 @@ Borrowing.create!(
   user: member2,
   book: book2,
   borrowed_at: 2.weeks.ago,
-  due_date: Date.current
+  due_date: 1.day.ago  # This will be overdue
 )
 
 puts "Seed data created successfully!"
