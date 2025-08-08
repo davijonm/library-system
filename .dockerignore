@@ -1,0 +1,20 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git and version control
+.git
+.gitignore
+.gitattributes
+
+# Ignore documentation
+README.md
+FEATURES.md
+*.md
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore everything except the library-api directory
+*
+!library-api/
