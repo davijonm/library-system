@@ -1,6 +1,6 @@
 class BorrowingsController < ApplicationController
   before_action :set_borrowing, only: [:show, :return_book]
-  before_action :authorize_librarian, only: [:return_book]
+  before_action :authorize_librarian, only: [:return_book, :overdue_members]
 
   def index
     @borrowings = current_user.borrowings.includes(:book)
@@ -48,7 +48,6 @@ class BorrowingsController < ApplicationController
   end
 
   def overdue_members
-    authorize_librarian
     @overdue_borrowings = Borrowing.overdue.includes(:user, :book)
     render json: @overdue_borrowings
   end
