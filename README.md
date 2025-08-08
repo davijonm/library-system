@@ -25,18 +25,6 @@ The system will be available at:
 - **Rails API**: http://localhost:3000
 - **PostgreSQL**: localhost:5432
 
-## 🏗️ Architecture
-
-```
-library-system/
-├── library-api/          # Rails application
-├── docker-compose.yml    # Multi-container setup
-├── Dockerfile           # Rails container definition
-├── start.sh             # Quick start script
-└── README.md           # This file
-```
-
-## 🐳 Docker Services
 
 ### Rails Application (`library_rails`)
 
@@ -56,13 +44,17 @@ library-system/
   - Persistent data storage
   - Optimized for development
 
-## 📋 API Endpoints
+## API Endpoints
 
 ### Authentication
 
 ```
 POST /register     # Register a new user
 POST /login        # Login user
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
 POST /logout       # Logout user
 ```
 
@@ -72,7 +64,22 @@ POST /logout       # Logout user
 GET    /books              # List all books
 GET    /books/:id          # Get specific book
 POST   /books              # Create book (Librarian only)
+{
+  "book": {
+    "title": "Book Title",
+    "author": "Author Name",
+    "genre": "Fiction",
+    "isbn": "978-1234567890",
+    "total_copies": 5,
+    "available_copies": 5
+  }
+}
 PUT    /books/:id          # Update book (Librarian only)
+{
+  "book": {
+    "title": "Updated Title"
+  }
+}
 DELETE /books/:id          # Delete book (Librarian only)
 GET    /books/search       # Search books
 ```
@@ -83,46 +90,12 @@ GET    /books/search       # Search books
 GET    /borrowings                    # List user borrowings
 GET    /borrowings/:id                # Get specific borrowing
 POST   /borrowings                    # Borrow a book
+{
+  "book_id": 1
+}
 PATCH  /borrowings/:id/return_book    # Return a book (Librarian only)
 GET    /borrowings/dashboard          # User dashboard
 GET    /borrowings/overdue_members    # Overdue members (Librarian only)
-```
-
-## 🔧 Development Commands
-
-### Start the system
-
-```bash
-docker compose up -d
-```
-
-### View logs
-
-```bash
-# All services
-docker compose logs -f
-
-# Specific service
-docker compose logs -f rails
-docker compose logs -f postgres
-```
-
-### Stop the system
-
-```bash
-docker compose down
-```
-
-### Rebuild containers
-
-```bash
-docker compose up --build -d
-```
-
-### Access Rails console
-
-```bash
-docker compose exec rails rails console
 ```
 
 ### Run tests
@@ -144,7 +117,7 @@ docker compose exec rails rails db:migrate
 docker compose exec rails rails db:seed
 ```
 
-## 👥 User Roles
+## User Roles
 
 ### Librarian
 
@@ -160,23 +133,16 @@ docker compose exec rails rails db:seed
 - Can view their borrowing history
 - Limited dashboard access
 
-## 🧪 Testing
+## Testing
 
-The application includes comprehensive RSpec tests:
+The application includes comprhensive RSpec tests:
 
 ```bash
 # Run all tests
-docker-compose exec rails bundle exec rspec
-
-# Run specific test files
-docker-compose exec rails bundle exec rspec spec/models/
-docker-compose exec rails bundle exec rspec spec/requests/
-
-# Run with coverage
-docker-compose exec rails bundle exec rspec --format documentation
+docker compose exec rails bundle exec rspec
 ```
 
-## 🔐 Authentication
+## Authentication
 
 The API uses JWT (JSON Web Tokens) for authentication:
 
@@ -190,7 +156,7 @@ The API uses JWT (JSON Web Tokens) for authentication:
 - **Member 1**: `member1@library.com` / `password123`
 - **Member 2**: `member2@library.com` / `password123`
 
-## 📊 Database Schema
+## Database Schema
 
 ### Users
 
@@ -221,7 +187,7 @@ The API uses JWT (JSON Web Tokens) for authentication:
 - `returned_at`: When book was returned (nullable)
 - `created_at`, `updated_at`: Timestamps
 
-## 🛠️ Environment Variables
+## Environment Variables
 
 Key environment variables for the Rails container:
 
@@ -232,40 +198,6 @@ DATABASE_USERNAME=postgres
 DATABASE_PASSWORD=password
 RAILS_MASTER_KEY=your_master_key_here
 ```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Port already in use**
-
-   ```bash
-   # Check what's using the port
-   lsof -i :3000
-   # Stop the conflicting service
-   ```
-
-2. **Database connection issues**
-
-   ```bash
-   # Restart the database
-   docker-compose restart postgres
-   ```
-
-3. **Rails server not starting**
-
-   ```bash
-   # Check logs
-   docker-compose logs rails
-   # Rebuild the container
-   docker-compose up --build rails
-   ```
-
-4. **Permission issues**
-   ```bash
-   # Fix file permissions
-   sudo chown -R $USER:$USER .
-   ```
 
 ### Reset Everything
 
@@ -279,20 +211,3 @@ docker system prune -a
 # Start fresh
 ./start.sh
 ```
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
----
-
-**Happy coding! 📚✨**
