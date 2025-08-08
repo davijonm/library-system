@@ -15,6 +15,8 @@ FactoryBot.define do
     trait :due_today do
       borrowed_at { 1.week.ago }
       due_date { Date.current }
+      # Skip validation for due today books in tests
+      to_create { |instance| instance.save(validate: false) }
     end
 
     trait :returned do
