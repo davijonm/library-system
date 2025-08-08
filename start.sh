@@ -17,10 +17,11 @@ echo "Waiting for database to be ready..."
 sleep 3
 
 echo "Making migrations and seeding database..."
-docker compose exec rails rails db:create db:migrate db:seed
+docker compose exec rails rails db:reset
 
 # Check if containers are running
 if docker compose ps | grep -q "Up"; then
+    echo ""
     echo "Library Management System is running!"
     echo "Rails API: http://localhost:3000"
     echo "PostgreSQL: localhost:5432"
