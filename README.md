@@ -1,152 +1,69 @@
-# Library Management System API
+# Library Management System
 
-A Ruby on Rails API for managing a library system with user authentication, book management, and borrowing functionality.
+A comprehensive Ruby on Rails API for managing a library system with authentication, book management, and borrowing functionality.
 
 ## Features
 
-### Authentication & Authorization
+### Prerequisites
 
-- User registration and login with JWT tokens
-- Two user roles: Librarian and Member
-- Role-based access control for different operations
+- Docker and Docker Compose installed
+- Git
 
-### Book Management
-
-- CRUD operations for books (Librarians only)
-- Book search by title, author, or genre
-- Track total copies and available copies
-- ISBN validation and uniqueness
-
-### Borrowing System
-
-- Members can borrow available books
-- Automatic due date calculation (2 weeks from borrowing)
-- Prevent duplicate borrowings of the same book
-- Librarians can mark books as returned
-- Track overdue books and due dates
-
-### Dashboard
-
-- **Librarian Dashboard**: Total books, borrowed books, books due today, overdue books
-- **Member Dashboard**: User's borrowed books, due dates, overdue books
-
-## Technology Stack
-
-- **Ruby**: 3.4.2
-- **Rails**: 8.0.2 (API mode)
-- **Database**: PostgreSQL
-- **Authentication**: JWT (JSON Web Tokens)
-- **Testing**: RSpec, FactoryBot, Shoulda Matchers
-- **Containerization**: Docker Compose
-
-## Prerequisites
-
-- Ruby 3.4.2
-- Docker and Docker Compose
-- PostgreSQL (via Docker)
-
-## Setup Instructions
-
-### 1. Clone and Navigate
+### One-Command Setup
 
 ```bash
-cd library-api
+# Clone the repository
+git clone <repository-url>
+cd library-system
+
+# Start the entire system
+./start.sh
 ```
 
-### 2. Start PostgreSQL with Docker
+The system will be available at:
 
-```bash
-docker compose up -d
-```
+- **Rails API**: http://localhost:3000
+- **PostgreSQL**: localhost:5432
 
-### 3. Install Dependencies
 
-```bash
-bundle install
-```
+### Rails Application (`library_rails`)
 
-### 4. Setup Database
+- **Port**: 3000
+- **Environment**: Development
+- **Features**:
+  - Hot reloading for development
+  - Automatic database setup
+  - Bundle caching
 
-```bash
-rails db:create db:migrate db:seed
-```
+### PostgreSQL Database (`library_postgres`)
 
-### 5. Start the Server
-
-```bash
-rails server
-```
-
-The API will be available at `http://localhost:3000`
+- **Port**: 5432
+- **Database**: library_api_development
+- **Features**:
+  - Health checks
+  - Persistent data storage
+  - Optimized for development
 
 ## API Endpoints
 
 ### Authentication
 
-#### Register User
-
 ```
-POST /register
-Content-Type: application/json
-
-{
-  "user": {
-    "email": "user@example.com",
-    "password": "password123",
-    "role": "member"
-  }
-}
-```
-
-#### Login
-
-```
-POST /login
-Content-Type: application/json
-
+POST /register     # Register a new user
+POST /login        # Login user
 {
   "email": "user@example.com",
   "password": "password123"
 }
-```
-
-#### Logout
-
-```
-POST /logout
-Authorization: Bearer <token>
+POST /logout       # Logout user
 ```
 
 ### Books
 
-#### List Books
-
 ```
-GET /books
-Authorization: Bearer <token>
-```
-
-#### Search Books
-
-```
-GET /books?search=query
-Authorization: Bearer <token>
-```
-
-#### Get Book
-
-```
-GET /books/:id
-Authorization: Bearer <token>
-```
-
-#### Create Book (Librarian only)
-
-```
-POST /books
-Authorization: Bearer <token>
-Content-Type: application/json
-
+GET    /books              # List all books
+GET    /books/:id          # Get specific book
+POST   /books              # Create book (Librarian only)
 {
   "book": {
     "title": "Book Title",
@@ -157,122 +74,91 @@ Content-Type: application/json
     "available_copies": 5
   }
 }
-```
-
-#### Update Book (Librarian only)
-
-```
-PUT /books/:id
-Authorization: Bearer <token>
-Content-Type: application/json
-
+PUT    /books/:id          # Update book (Librarian only)
 {
   "book": {
     "title": "Updated Title"
   }
 }
-```
-
-#### Delete Book (Librarian only)
-
-```
-DELETE /books/:id
-Authorization: Bearer <token>
+DELETE /books/:id          # Delete book (Librarian only)
+GET    /books/search       # Search books
 ```
 
 ### Borrowings
 
-#### List User Borrowings
-
 ```
-GET /borrowings
-Authorization: Bearer <token>
-```
-
-#### Get Borrowing
-
-```
-GET /borrowings/:id
-Authorization: Bearer <token>
-```
-
-#### Borrow Book
-
-```
-POST /borrowings
-Authorization: Bearer <token>
-Content-Type: application/json
-
+GET    /borrowings                    # List user borrowings
+GET    /borrowings/:id                # Get specific borrowing
+POST   /borrowings                    # Borrow a book
 {
   "book_id": 1
 }
+PATCH  /borrowings/:id/return_book    # Return a book (Librarian only)
+GET    /borrowings/dashboard          # User dashboard
+GET    /borrowings/overdue_members    # Overdue members (Librarian only)
 ```
 
-#### Return Book (Librarian only)
+### Run tests
 
-```
-PATCH /borrowings/:id/return_book
-Authorization: Bearer <token>
-```
-
-#### Dashboard
-
-```
-GET /borrowings/dashboard
-Authorization: Bearer <token>
+```bash
+docker compose exec rails bundle exec rspec
 ```
 
-#### Overdue Members (Librarian only)
+### Database operations
 
+```bash
+# Reset database
+docker compose exec rails rails db:reset
+
+# Run migrations
+docker compose exec rails rails db:migrate
+
+# Seed data
+docker compose exec rails rails db:seed
 ```
-GET /borrowings/overdue_members
-Authorization: Bearer <token>
+
+## User Roles
+
+### Librarian
+
+- Can create, update, and delete books
+- Can mark books as returned
+- Can view overdue members
+- Full dashboard access
+
+### Member
+
+- Can view available books
+- Can borrow books
+- Can view their borrowing history
+- Limited dashboard access
+
+## Testing
+
+The application includes comprhensive RSpec tests:
+```bash
+# Prepare the test database 
+docker compose exec rails bash -c "RAILS_ENV=test rails db:reset"
 ```
 
-## Sample Data
+```bash
+# Run all tests
+docker compose exec rails bash -c "RAILS_ENV=test bundle exec rspec ./spec"
+```
 
-The application comes with seeded data for testing:
+## Authentication
 
-### Users
+The API uses JWT (JSON Web Tokens) for authentication:
+
+1. **Register**: `POST /register` with email, password, and role
+2. **Login**: `POST /login` with email and password
+3. **Use Token**: Include `Authorization: Bearer <token>` in subsequent requests
+
+### Sample Users (from seeds)
 
 - **Librarian**: `librarian@library.com` / `password123`
 - **Member 1**: `member1@library.com` / `password123`
 - **Member 2**: `member2@library.com` / `password123`
-
-### Books
-
-- The Great Gatsby
-- To Kill a Mockingbird
-- 1984
-- Pride and Prejudice
-- The Hobbit
-- The Catcher in the Rye
-- Lord of the Flies
-- Animal Farm
-
-## Testing
-
-### Run All Tests
-
-```bash
-bundle exec rspec
-```
-
-### Run Specific Test Files
-
-```bash
-bundle exec rspec spec/models/
-bundle exec rspec spec/requests/
-```
-
-### Test Coverage
-
-The test suite includes:
-
-- Model validations and associations
-- Controller actions and authorization
-- API endpoint functionality
-- Business logic for borrowing and returning
 
 ## Database Schema
 
@@ -280,8 +166,8 @@ The test suite includes:
 
 - `id`: Primary key
 - `email`: Unique email address
-- `password_digest`: Encrypted password
-- `role`: User role (librarian/member)
+- `password_digest`: Hashed password
+- `role`: 'librarian' or 'member'
 - `created_at`, `updated_at`: Timestamps
 
 ### Books
@@ -292,7 +178,7 @@ The test suite includes:
 - `genre`: Book genre
 - `isbn`: Unique ISBN
 - `total_copies`: Total number of copies
-- `available_copies`: Number of available copies
+- `available_copies`: Available copies
 - `created_at`, `updated_at`: Timestamps
 
 ### Borrowings
@@ -300,35 +186,32 @@ The test suite includes:
 - `id`: Primary key
 - `user_id`: Foreign key to users
 - `book_id`: Foreign key to books
-- `borrowed_at`: When the book was borrowed
-- `due_date`: When the book is due
-- `returned_at`: When the book was returned (nullable)
+- `borrowed_at`: When book was borrowed
+- `due_date`: When book is due
+- `returned_at`: When book was returned (nullable)
 - `created_at`, `updated_at`: Timestamps
 
 ## Environment Variables
 
-The application uses the following environment variables for database configuration:
-
-- `DATABASE_HOST`: Database host (default: localhost)
-- `DATABASE_USERNAME`: Database username (default: postgres)
-- `DATABASE_PASSWORD`: Database password (default: password)
-
-## Development
-
-### Adding New Features
-
-1. Create models with `rails generate model`
-2. Add validations and associations
-3. Create controllers with `rails generate controller`
-4. Add routes to `config/routes.rb`
-5. Write tests for models and controllers
-6. Update documentation
-
-### Code Style
-
-The project uses RuboCop for code style enforcement:
+Key environment variables for the Rails container:
 
 ```bash
-bundle exec rubocop
+RAILS_ENV=development
+DATABASE_HOST=postgres
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=password
+RAILS_MASTER_KEY=your_master_key_here
 ```
 
+### Reset Everything
+
+```bash
+# Stop and remove everything
+docker compose down -v
+
+# Remove all images
+docker system prune -a
+
+# Start fresh
+./start.sh
+```

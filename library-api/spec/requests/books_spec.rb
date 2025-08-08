@@ -30,7 +30,7 @@ RSpec.describe 'Books', type: :request do
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
-        expect(json.length).to eq(3)
+        expect(json.length).to eq(Book.count)
       end
 
       it 'returns filtered books when search parameter is provided' do
