@@ -142,8 +142,8 @@ RSpec.describe 'Borrowings', type: :request do
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
-        expect(json['total_books']).to eq(3)
-        expect(json['total_borrowed']).to eq(3)
+        expect(json['total_books']).to eq(Book.count)
+        expect(json['total_borrowed']).to eq(Borrowing.active.count)
         expect(json['overdue_books']).to be_present
       end
     end
