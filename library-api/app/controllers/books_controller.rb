@@ -8,7 +8,7 @@ class BooksController < ApplicationController
     else
       @books = Book.all
     end
-    
+
     render json: @books
   end
 
