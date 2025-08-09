@@ -1,90 +1,64 @@
 #!/bin/bash
 
-# Library Management System - Full Stack Startup Script
+# Library Management System - Full Stack Startup Script (Dockerized)
 
-echo "Starting Library Management System (Full Stack)..."
+set -euo pipefail
+
+echo "Starting Library Management System (Full Stack via Docker Compose)..."
 echo
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+command_exists() { command -v "$1" >/dev/null 2>&1; }
 
-# Check prerequisites
+# Prerequisites
 echo "Checking prerequisites..."
-
-# Check Docker
 if ! command_exists docker; then
-    echo " Docker is not installed. Please install Docker to continue."
-    exit 1
+  echo "Docker is not installed. Please install Docker to continue."
+  exit 1
 fi
-
-# Check Docker Compose
-if ! command_exists docker-compose && ! docker compose version >/dev/null 2>&1; then
-    echo " Docker Compose is not installed. Please install Docker Compose to continue."
-    exit 1
+if ! docker compose version >/dev/null 2>&1; then
+  echo "Docker Compose (Docker CLI plugin) is not available. Please install/update Docker."
+  exit 1
 fi
-
-# Check Node.js
-if ! command_exists node; then
-    echo " Node.js is not installed. Please install Node.js 16+ to continue."
-    exit 1
-fi
-
-# Check npm
-if ! command_exists npm; then
-    echo " npm is not installed. Please install npm to continue."
-    exit 1
-fi
-
-echo " All prerequisites are installed"
+echo "Docker and Docker Compose detected"
 echo
 
-# Start backend in background
-echo " Starting Rails API and PostgreSQL..."
-sudo chmod +x ./start.sh & ./start.sh & BACKEND_PID=$!
+# Ensure we are at repo root (where docker-compose.yml lives)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# Wait a bit for backend to start
-echo " Waiting for backend to initialize..."
-sleep 15
+# Build and start all services
+echo "Building and starting containers (postgres, rails, frontend)..."
+docker compose up --build -d
 
-# Start frontend
-echo " Starting React frontend..."
-cd library-frontend
+# Optional: wait a moment for services to initialize
+echo "Waiting for services to initialize..."
+sleep 5
 
-# Install dependencies if needed
-if [ ! -d "node_modules" ]; then
-    echo " Installing frontend dependencies..."
-    npm install
-fi
+# Ensure stale PID files are removed (belt-and-suspenders)
+echo "Ensuring no stale server PID remains..."
+docker compose exec -T rails bash -lc "rm -f tmp/pids/server.pid"
 
-# Start frontend
+# Initialize database (reset for a clean dev state)
+echo "Preparing database (rails db:reset)..."
+docker compose exec rails bash -c "rails db:reset"
+
+# Show status and endpoints
 echo
-echo " System URLs:"
-echo "  - Rails API: http://localhost:5000"
-echo "  - React Frontend: http://localhost:3000"
+echo "✅ Library Management System is running!"
+echo "🔗 Rails API:       http://localhost:3000"
+echo "🔗 React Frontend:  http://localhost:3001"
+echo "🗄️  PostgreSQL:      localhost:5432"
 echo
-echo " Demo accounts:"
+echo "👥 Demo accounts:"
 echo "  - Librarian: librarian@library.com / password123"
-echo "  - Member: member1@library.com / password123"
-echo
-echo " Press Ctrl+C to stop both servers"
+echo "  - Member:    member1@library.com / password123"
 echo
 
-# Function to cleanup on exit
-cleanup() {
-    echo
-    echo "🛑 Stopping servers..."
-    kill $BACKEND_PID 2>/dev/null
-    docker-compose down 2>/dev/null
-    exit 0
-}
+# Follow logs unless --no-logs flag is provided
+if [[ "${1-}" != "--no-logs" ]]; then
+  echo "Streaming logs (Ctrl+C to stop streaming without stopping containers)..."
+  docker compose logs -f
+else
+  echo "Containers started in background (no logs). Use 'docker compose logs -f' to follow logs."
+fi
 
-# Set up signal handlers
-trap cleanup SIGINT SIGTERM
-
-# Start frontend (this will block)
-npm start
-
-# Cleanup if npm start exits
-cleanup

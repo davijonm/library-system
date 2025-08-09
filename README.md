@@ -66,6 +66,7 @@ git clone https://github.com/davijonm/library-system.git
 cd library-system
 
 # Start both backend and frontend together
+chmod +x ./start-fullstack.sh
 ./start-fullstack.sh
 ```
 
