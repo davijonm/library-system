@@ -259,5 +259,5 @@ docker compose down -v
 docker system prune -a
 
 # Start fresh
-./start.sh
+./start-fullstack.sh
 ```
