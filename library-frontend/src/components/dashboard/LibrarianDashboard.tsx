@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { DashboardData } from "../../types";
 import { Book, Users, Calendar, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { apiService } from "../../services/api";
 
 interface LibrarianDashboardProps {
   data: DashboardData;
+  onRefresh?: () => Promise<void> | void;
 }
 
-const LibrarianDashboard: React.FC<LibrarianDashboardProps> = ({ data }) => {
+const LibrarianDashboard: React.FC<LibrarianDashboardProps> = ({
+  data,
+  onRefresh,
+}) => {
+  const [returningId, setReturningId] = useState<number | null>(null);
+
+  const handleReturn = async (borrowingId: number) => {
+    setReturningId(borrowingId);
+    try {
+      await apiService.returnBook(borrowingId);
+      if (onRefresh) await onRefresh();
+    } catch (error: any) {
+      alert(error.response?.data?.error || "Failed to return book");
+    } finally {
+      setReturningId(null);
+    }
+  };
   const stats = [
     {
       name: "Total Books",
@@ -132,10 +150,24 @@ const LibrarianDashboard: React.FC<LibrarianDashboardProps> = ({ data }) => {
                       Due: {new Date(borrowing.due_date).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right space-y-2">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                       Overdue
                     </span>
+                    <div>
+                      <button
+                        onClick={() => handleReturn(borrowing.id)}
+                        disabled={returningId === borrowing.id}
+                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                      >
+                        {returningId === borrowing.id ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        ) : null}
+                        {returningId === borrowing.id
+                          ? "Returning..."
+                          : "Mark Returned"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -1,29 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { apiService } from '../../services/api';
-import { DashboardData } from '../../types';
-import LibrarianDashboard from './LibrarianDashboard';
-import MemberDashboard from './MemberDashboard';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { apiService } from "../../services/api";
+import { DashboardData } from "../../types";
+import LibrarianDashboard from "./LibrarianDashboard";
+import MemberDashboard from "./MemberDashboard";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  // Refresh dashboard data without toggling the main loading spinner
+  const refreshDashboard = async () => {
+    try {
+      const data = await apiService.getDashboard();
+      setDashboardData(data);
+    } catch (error: any) {
+      setError(error.response?.data?.error || "Failed to fetch dashboard data");
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const initialLoad = async () => {
       try {
         const data = await apiService.getDashboard();
         setDashboardData(data);
       } catch (error: any) {
-        setError(error.response?.data?.error || 'Failed to fetch dashboard data');
+        setError(
+          error.response?.data?.error || "Failed to fetch dashboard data"
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
+    initialLoad();
   }, []);
 
   if (loading) {
@@ -57,15 +71,14 @@ const Dashboard: React.FC = () => {
           Welcome back, {user?.email}!
         </h1>
         <p className="mt-1 text-sm text-gray-600">
-          {user?.role === 'librarian' 
-            ? 'Manage your library and monitor borrowings'
-            : 'Track your borrowed books and discover new ones'
-          }
+          {user?.role === "librarian"
+            ? "Manage your library and monitor borrowings"
+            : "Track your borrowed books and discover new ones"}
         </p>
       </div>
 
-      {user?.role === 'librarian' ? (
-        <LibrarianDashboard data={dashboardData} />
+      {user?.role === "librarian" ? (
+        <LibrarianDashboard data={dashboardData} onRefresh={refreshDashboard} />
       ) : (
         <MemberDashboard data={dashboardData} />
       )}
