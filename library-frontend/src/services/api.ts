@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { User, Book, Borrowing, AuthResponse, DashboardData } from "../types";
 
-const BASE_URL = "http://localhost:3000";
+// Use build-time env var if provided (Docker), otherwise default to localhost
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 class ApiService {
   private api: AxiosInstance;

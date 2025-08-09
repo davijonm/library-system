@@ -28,5 +28,17 @@ services:
     depends_on:
       - postgres
 
+  frontend:
+    build:
+      context: ./library-frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:3000
+    container_name: library_frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - rails
+
 volumes:
   postgres_data:
