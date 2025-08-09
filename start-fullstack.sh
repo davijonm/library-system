@@ -42,8 +42,7 @@ echo
 
 # Start backend in background
 echo " Starting Rails API and PostgreSQL..."
-./start.sh &
-BACKEND_PID=$!
+sudo chmod +x ./start.sh & ./start.sh & BACKEND_PID=$!
 
 # Wait a bit for backend to start
 echo " Waiting for backend to initialize..."
@@ -62,8 +61,8 @@ fi
 # Start frontend
 echo
 echo " System URLs:"
-echo "  - Rails API: http://localhost:3000"
-echo "  - React Frontend: http://localhost:3001"
+echo "  - Rails API: http://localhost:5000"
+echo "  - React Frontend: http://localhost:3000"
 echo
 echo " Demo accounts:"
 echo "  - Librarian: librarian@library.com / password123"
