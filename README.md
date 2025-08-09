@@ -1,30 +1,79 @@
 # Library Management System
 
-A comprehensive Ruby on Rails API for managing a library system with authentication, book management, and borrowing functionality.
+A full-stack library management system with a Ruby on Rails API backend and a modern React TypeScript frontend, providing comprehensive book management and borrowing functionality.
 
 ## Features
 
-### Prerequisites
+### Core Functionality
 
-- Docker and Docker Compose installed
+- **User Management**: Registration, authentication, and role-based access control
+- **Book Management**: CRUD operations for library inventory
+- **Borrowing System**: Book checkout, return tracking, and due date management
+- **Search & Discovery**: Advanced search by title, author, and genre
+- **Dashboard Analytics**: Role-specific dashboards with key metrics
+- **Overdue Management**: Automated tracking and management of overdue books
+
+### User Roles
+
+#### Librarian
+
+- Manage book inventory (add, edit, delete books)
+- Process book returns
+- View overdue members and books
+- Access comprehensive dashboard with library statistics
+- All member capabilities
+
+#### Member
+
+- Browse and search book collection
+- Borrow available books
+- View personal borrowing history with detailed status
+- Track due dates and overdue books
+- Personal dashboard with borrowing status
+- **Note**: Book returns are processed by librarians
+
+## Architecture
+
+This system consists of two main components:
+
+### Backend (Rails API)
+
+- **Port**: 3000
+- **Technology**: Ruby on Rails 7 with PostgreSQL
+- **Features**: JWT authentication, RESTful API, comprehensive testing
+
+### Frontend (React App)
+
+- **Port**: 3001
+- **Technology**: React 18 with TypeScript, Tailwind CSS
+- **Features**: Responsive design, role-based access, real-time search
+
+## Prerequisites
+
+- **Backend**: Docker and Docker Compose
+- **Frontend**: Node.js 16+ and npm
 - Git
 
-### One-Command Setup
+## Quick Start
+
+### Full Stack (API + Frontend)
+
+**Single Command:**
 
 ```bash
 # Clone the repository
 git clone https://github.com/davijonm/library-system.git
 cd library-system
 
-# Start the entire system
-./start.sh
+# Start both backend and frontend together
+./start-fullstack.sh
 ```
 
 The system will be available at:
 
 - **Rails API**: http://localhost:3000
+- **React Frontend**: http://localhost:3001
 - **PostgreSQL**: localhost:5432
-
 
 ### Rails Application (`library_rails`)
 
@@ -119,7 +168,7 @@ GET    /borrowings/overdue_members    # Overdue members (Librarian only)
 The application includes comprhensive RSpec tests and are covered with simple-cov (96%)
 
 ```bash
-# Prepare the test database 
+# Prepare the test database
 docker compose exec rails bash -c "RAILS_ENV=test rails db:reset"
 ```
 
@@ -141,6 +190,32 @@ The API uses JWT (JSON Web Tokens) for authentication:
 - **Librarian**: `librarian@library.com` / `password123`
 - **Member 1**: `member1@library.com` / `password123`
 - **Member 2**: `member2@library.com` / `password123`
+
+## Frontend Features
+
+### Modern React Interface
+
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **TypeScript**: Full type safety and better developer experience
+- **Real-time Search**: Instant search results as you type
+- **Loading States**: Smooth user experience with proper loading indicators
+- **Error Handling**: Comprehensive error messages and fallback states
+
+### User Experience
+
+- **Role-based Navigation**: Different menu items based on user role
+- **Dashboard Analytics**: Visual representation of key metrics
+- **Form Validation**: Client-side validation with helpful error messages
+- **Mobile Friendly**: Touch-friendly interface for mobile devices
+- **Accessibility**: Semantic HTML and keyboard navigation support
+
+### Technical Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **API Integration**: Seamless communication with Rails backend
+- **State Management**: React Context for global state
+- **Route Protection**: Role-based route access control
+- **Component Architecture**: Reusable and maintainable components
 
 ## Database Schema
 
