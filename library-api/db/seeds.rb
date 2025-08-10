@@ -92,6 +92,7 @@ end
 # some sample borrowings
 book1 = Book.first
 book2 = Book.second
+book3 = Book.last
 
 # member1 borrows a book
 Borrowing.create!(
@@ -101,12 +102,20 @@ Borrowing.create!(
   due_date: 1.week.from_now
 )
 
+# member1 borrows a book and doenst return it
+Borrowing.create!(
+  user: member1,
+  book: book3,
+  borrowed_at: 2.weeks.ago,
+  due_date: 1.day.ago  # This will be overdue
+)
+
 # member2 borrows a book
 Borrowing.create!(
   user: member2,
   book: book2,
-  borrowed_at: 2.weeks.ago,
-  due_date: 1.day.ago  # This will be overdue
+  borrowed_at: 1.week.ago,
+  due_date: 1.week.from_now
 )
 
 puts "Seed data created successfully!"
