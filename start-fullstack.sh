@@ -54,11 +54,4 @@ echo "  - Librarian: librarian@library.com / password123"
 echo "  - Member:    member1@library.com / password123"
 echo
 
-# Follow logs unless --no-logs flag is provided
-if [[ "${1-}" != "--no-logs" ]]; then
-  echo "Streaming logs (Ctrl+C to stop streaming without stopping containers)..."
-  docker compose logs -f
-else
-  echo "Containers started in background (no logs). Use 'docker compose logs -f' to follow logs."
-fi
 
