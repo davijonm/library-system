@@ -32,7 +32,7 @@ docker compose up --build -d
 
 # Optional: wait a moment for services to initialize
 echo "Waiting for services to initialize..."
-sleep 5
+sleep 3
 
 # Ensure stale PID files are removed (belt-and-suspenders)
 echo "Ensuring no stale server PID remains..."
@@ -52,6 +52,8 @@ echo
 echo "👥 Demo accounts:"
 echo "  - Librarian: librarian@library.com / password123"
 echo "  - Member:    member1@library.com / password123"
+echo
+echo "Go to http://localhost:3001 to access the application."
 echo
 
 
