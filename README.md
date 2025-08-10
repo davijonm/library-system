@@ -69,6 +69,8 @@ chmod +x ./start-fullstack.sh
 ./start-fullstack.sh
 ```
 
+### **Go to http://localhost:3001 to have acess to the application**
+
 The system will be available at:
 
 - **Rails API**: http://localhost:3000
