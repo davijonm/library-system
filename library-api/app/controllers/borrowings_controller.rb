@@ -4,7 +4,7 @@ class BorrowingsController < ApplicationController
 
   def index
     @borrowings = current_user.borrowings.includes(:book)
-    render json: @borrowings
+    render json: @borrowings.as_json(include: :book)
   end
 
   def show
