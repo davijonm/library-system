@@ -50,8 +50,7 @@ This system consists of two main components:
 
 ## Prerequisites
 
-- **Backend**: Docker and Docker Compose
-- **Frontend**: Node.js 16+ and npm
+- Docker and Docker Compose
 - Git
 
 ## Quick Start
@@ -75,24 +74,6 @@ The system will be available at:
 - **Rails API**: http://localhost:3000
 - **React Frontend**: http://localhost:3001
 - **PostgreSQL**: localhost:5432
-
-### Rails Application (`library_rails`)
-
-- **Port**: 3000
-- **Environment**: Development
-- **Features**:
-  - Hot reloading for development
-  - Automatic database setup
-  - Bundle caching
-
-### PostgreSQL Database (`library_postgres`)
-
-- **Port**: 5432
-- **Database**: library_api_development
-- **Features**:
-  - Health checks
-  - Persistent data storage
-  - Optimized for development
 
 ## API Endpoints
 
@@ -191,32 +172,6 @@ The API uses JWT (JSON Web Tokens) for authentication:
 - **Librarian**: `librarian@library.com` / `password123`
 - **Member 1**: `member1@library.com` / `password123`
 - **Member 2**: `member2@library.com` / `password123`
-
-## Frontend Features
-
-### Modern React Interface
-
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **TypeScript**: Full type safety and better developer experience
-- **Real-time Search**: Instant search results as you type
-- **Loading States**: Smooth user experience with proper loading indicators
-- **Error Handling**: Comprehensive error messages and fallback states
-
-### User Experience
-
-- **Role-based Navigation**: Different menu items based on user role
-- **Dashboard Analytics**: Visual representation of key metrics
-- **Form Validation**: Client-side validation with helpful error messages
-- **Mobile Friendly**: Touch-friendly interface for mobile devices
-- **Accessibility**: Semantic HTML and keyboard navigation support
-
-### Technical Features
-
-- **JWT Authentication**: Secure token-based authentication
-- **API Integration**: Seamless communication with Rails backend
-- **State Management**: React Context for global state
-- **Route Protection**: Role-based route access control
-- **Component Architecture**: Reusable and maintainable components
 
 ## Database Schema
 
